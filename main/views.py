@@ -35,13 +35,13 @@ def index(request):
             text = gTTS(text=tts_str, lang='es')
             # Borra los archivos anteriores
             try:
-                os.remove("main/static/"+name_record)
+                os.remove("/opt/asemi/asemi/static/"+name_record)
             except:
                 pass
             #Obtiene fecha para el nombre del archivo
-            text.save("main/static/"+name_record)
+            text.save("/opt/asemi/asemi/static/"+name_record)
             # Convierte el audio
-            convert_audio(name_record, final_name)
+            convert_audio("/opt/asemi/asemi/static/"+name_record, "/opt/asemi/asemi/static/"+final_name)
             return render(request, 'main/index.html', {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'], "name_record": final_name})
     else:
         print("GET METHOD")
@@ -58,8 +58,8 @@ def find_matches(text):
 
 def convert_audio(name_record, final_name):
     try:
-        record = AudioSegment.from_mp3("main/static/" + name_record)
-        record.export("main/static/" + final_name, format="ogg")
+        record = AudioSegment.from_mp3(name_record)
+        record.export(final_name, format="ogg")
     except Exception as e:
         print(e)
 
