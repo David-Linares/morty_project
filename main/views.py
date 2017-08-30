@@ -37,6 +37,7 @@ def index(request):
             equa_list = request.POST['latex_form'].split('\n')
             print(equa_list)
             for index, value in enumerate(equa_list):
+                print(index)
                 # Quita espacios que no sirven
                 # Convierte la ecuación latex a mathml
                 value = value.rstrip()
