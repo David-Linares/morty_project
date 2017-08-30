@@ -58,7 +58,7 @@
     </div>
     <div class="row">
         <div class="col-sm-8">
-            <h4 tabindex="12">Ecuación Gráfica</h4>
+            <label style="font-size:24px" tabindex="12">Ecuación Gráfica</label>
             <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px" tabindex="13">
                 {% for math in mathml_data %}
                     <div class="col-sm-4">
@@ -71,7 +71,7 @@
                     {% endwith %}
                     {% endwith %}
                     </div>
-                    <p tabindex="15">{{ math | safe }}</p>
+                    <div editable="true" readonly tabindex="18">{{ math | safe }}"</div>
                     <br>
                 {% endfor %}
             </div>
