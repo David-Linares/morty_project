@@ -13,11 +13,11 @@
     <div class="row">
         <div class="col-xs-12 col-sm-8">
             <p style="text-align: center">
-                <label style="font-size: 25px" tabindex="1">ASEMI</label>
-                <p style="text-align: center; line-height: 30%" tabindex="2">Proyecto de grado</p>
-                <p style="text-align: center; line-height: 30%" tabindex="3">Desarrollado por: Ximena Garzón y Daniel Beltrán</p>
-                <p style="text-align: center; line-height: 30%" tabindex="4">Director: Ingeniero Mario Silva</p>
-                <p style="text-align: center; line-height: 30%" tabindex="5">Programa Ingeniería de Sistemas</p>
+                <label style="font-size: 25px" tabindex="1">ASEMI</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="2">Proyecto de grado</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="3">Desarrollado por: Ximena Garzón y Daniel Beltrán</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="4">Director: Ingeniero Mario Silva</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="5">Programa Ingeniería de Sistemas</label><br/>
             </p>
         </div>
         <div class="col-xs-12 col-sm-4">
@@ -27,7 +27,7 @@
     </div>
     <div class="row">
         <div class="col-sm-8">
-            <h4 tabindex="8">Escriba ecuación en lenguaje Latex</h4>
+            <label style="font-size: 24px" tabindex="8">Escriba ecuación en lenguaje Latex</label>
             <form action="/" method="post">
                 {% csrf_token %}
                 <textarea cols="80" rows="10" name="latex_form" style="border: 1px solid #777777" tabindex="9">{{ latex_form }}</textarea>
@@ -58,13 +58,13 @@
     </div>
     <div class="row">
         <div class="col-sm-8">
-            <h4 tabindex="12">Ecuación Gráfica</h4>
+            <label style="font-size: 24px" tabindex="12">Ecuación Gráfica</label>
             <div class="col-sm-8" style="border: 1px solid #777; min-height: 150px; min-width: 90%; font-size: 30px" tabindex="13">
                 {{ mathml_data | safe }}
             </div>
         </div>
         <div class="col-sm-4">
-            <input type="text" name="sound_name" id="sound_name" value="{% static name_record %}">
+            <input type="hidden" name="sound_name" id="sound_name" value="{% static name_record %}">
             <input type="button" value="Leer Ecuación" alt="Leer Ecuación" class="btn btn-success" tabindex="14" onclick="play_sound()">
 {#            <img src="https://codigoenlata.files.wordpress.com/2015/11/pdf-cenlata.png" alt="Exportar ecuación a archivo PDF" height="100px" class="btn" tabindex="15">#}
 {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
