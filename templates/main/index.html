@@ -59,15 +59,22 @@
     <div class="row">
         <div class="col-sm-8">
             <h4 tabindex="12">Ecuación Gráfica</h4>
-            <div class="col-sm-8" style="border: 1px solid #777; min-height: 150px; min-width: 90%; font-size: 30px" tabindex="13">
-                {{ mathml_data | safe }}
+            <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px" tabindex="13">
+                {% for math in mathml_data %}
+                    <div class="col-sm-4">
+                    {% with y=forloop.counter0|stringformat:"s" %}
+                    {% with val_sound="last_record"|add:y|add:".ogg" %}
+                        <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
+                        <input type="button" value="Leer Ecuación" alt="Leer Ecuación" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
+            {#            <img src="https://codigoenlata.files.wordpress.com/2015/11/pdf-cenlata.png" alt="Exportar ecuación a archivo PDF" height="100px" class="btn" tabindex="15">#}
+            {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
+                    {% endwith %}
+                    {% endwith %}
+                    </div>
+                    <p tabindex="15">{{ math | safe }}</p>
+                    <br>
+                {% endfor %}
             </div>
-        </div>
-        <div class="col-sm-4">
-            <input type="hidden" name="sound_name" id="sound_name" value="{% static name_record %}">
-            <input type="button" value="Leer Ecuación" alt="Leer Ecuación" class="btn btn-success" tabindex="14" onclick="play_sound()">
-{#            <img src="https://codigoenlata.files.wordpress.com/2015/11/pdf-cenlata.png" alt="Exportar ecuación a archivo PDF" height="100px" class="btn" tabindex="15">#}
-{#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
         </div>
     </div>
 </div>
@@ -75,8 +82,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="{% static "main/js/script.js" %}"></script>
 <script type="application/javascript">
-    function play_sound(){
-        sound_name = document.getElementById("sound_name");
+    function play_sound(sound){
+        console.log(sound)
+        sound_name = document.getElementById(sound);
         var snd = new Audio(sound_name.value);
         snd.play();
     }
