@@ -15,8 +15,8 @@ def index(request):
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
-            name_record = "last_record%d.mp3"
-            final_name = "last_record%d.ogg"
+            name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+            final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
             list_final = []
             mathml_output = []
             # Listado de ecuaciones escritas.
@@ -41,11 +41,11 @@ def index(request):
                 text = gTTS(text=tts_str, lang='es')
                 # Borra los archivos anteriores
                 try:
-                    os.remove("main/static/" + name_record % index)
+                    os.remove(name_record % index)
                 except:
                     pass
                 # Obtiene fecha para el nombre del archivo
-                text.save("main/static/" + name_record % index)
+                text.save(name_record % index)
                 # Convierte el audio
                 convert_audio(name_record % index, final_name % index)
                 list_final.append(final_name % index)
@@ -69,8 +69,8 @@ def find_matches(text):
 
 def convert_audio(name_record, final_name):
     try:
-        record = AudioSegment.from_mp3("main/static/" + name_record)
-        record.export("main/static/" + final_name, format="ogg")
+        record = AudioSegment.from_mp3(name_record)
+        record.export(final_name, format="ogg")
     except Exception as e:
         print(e)
 
