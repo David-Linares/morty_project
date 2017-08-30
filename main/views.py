@@ -10,6 +10,16 @@ import latex2mathml.converter
 # Falta corregir orden en el código.
 from asemi import settings
 
+from django import template
+
+register = template.Library()
+
+
+@register.filter()
+def to_int(value):
+    print(value)
+    return int(value)
+
 
 def index(request):
     # Si llega el método post.
@@ -27,32 +37,35 @@ def index(request):
             equa_list = request.POST['latex_form'].split('\n')
             print(equa_list)
             for index, value in enumerate(equa_list):
+                # Quita espacios que no sirven
                 # Convierte la ecuación latex a mathml
-                mathml_output.append(latex2mathml.converter.convert(value))
-                matches_list = find_matches(value)
-                tts_str = ""
-                if len(matches_list) > 0:
-                    for m in matches_list:
-                        tts_str += search_string_db(m)
-                else:
-                    tts_str = value
-                print(tts_str)
-                print('racc' in tts_str)
-                if 'frac' in value:
-                    tts_str = tts_str.replace('}{', ' sobre ')
-                print(tts_str)
-                # Genera el código para generar el audio de lectura.
-                text = gTTS(text=tts_str, lang='es')
-                # Borra los archivos anteriores
-                try:
-                    os.remove(name_record % index)
-                except:
-                    pass
-                # Obtiene fecha para el nombre del archivo
-                text.save(name_record % index)
-                # Convierte el audio
-                convert_audio(name_record % index, final_name % index)
-                list_final.append(final_name % index)
+                value = value.rstrip()
+                if value:
+                    mathml_output.append(latex2mathml.converter.convert(value))
+                    matches_list = find_matches(value)
+                    tts_str = ""
+                    if len(matches_list) > 0:
+                        for m in matches_list:
+                            if "\r" in m:
+                                m.replace("\r", "")
+                            if m != "":
+                                tts_str += search_string_db(m)
+                    else:
+                        tts_str = value
+                    if 'frac' in value:
+                        tts_str = tts_str.replace('}{', ' sobre ')
+                    # Genera el código para generar el audio de lectura.
+                    text = gTTS(text=tts_str, lang='es')
+                    # Borra los archivos anteriores
+                    try:
+                        os.remove(name_record % index)
+                    except:
+                        pass
+                    # Obtiene fecha para el nombre del archivo
+                    text.save(name_record % index)
+                    # Convierte el audio
+                    convert_audio(name_record % index, final_name % index)
+                    list_final.append(final_name % index)
             print(mathml_output)
             print(list_final)
             return render(request, 'main/index.html',
@@ -66,8 +79,6 @@ def index(request):
 def find_matches(text):
     regex = settings.FUNCTIONS.get("FRAC")
     matches = re.findall(regex, text)
-    print("Matches")
-    print(matches)
     return matches
 
 
@@ -80,11 +91,7 @@ def convert_audio(name_record, final_name):
 
 
 def search_string_db(st):
-    print("st")
-    print(st)
     data = query_str(st)
-    print("data")
-    print(len(data))
     if len(data) > 0:
         for d in data:
             print(d[3])
@@ -93,13 +100,16 @@ def search_string_db(st):
 
 
 def query_str(st):
-    st = format_str(st)
-    query = "select * from expresiones_matematicas where expresion_latex = '%s'" % (st)
-    print(query)
-    with connection.cursor() as cursor:
-        cursor.execute(query);
-        data = cursor.fetchall()
-    return data
+    try:
+        st = format_str(st)
+        query = "select * from expresiones_matematicas where expresion_latex = '%s'" % (st)
+        with connection.cursor() as cursor:
+            cursor.execute(query);
+            data = cursor.fetchall()
+        return data
+    except Exception as e:
+        print(e)
+        raise
 
 
 def format_str(str):
