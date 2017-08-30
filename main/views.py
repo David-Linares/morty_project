@@ -36,8 +36,9 @@ def index(request):
             # Listado de ecuaciones escritas.
             equa_list = request.POST['latex_form'].split('\n')
             print(equa_list)
+            num_audio = 0
             for index, value in enumerate(equa_list):
-                print(index)
+                print(num_audio)
                 # Quita espacios que no sirven
                 # Convierte la ecuación latex a mathml
                 value = value.rstrip()
@@ -63,15 +64,16 @@ def index(request):
                     except:
                         pass
                     # Obtiene fecha para el nombre del archivo
-                    text.save(name_record % index)
+                    text.save(name_record % num_audio)
                     # Convierte el audio
-                    convert_audio(name_record % index, final_name % index)
-                    list_final.append(final_name % index)
+                    convert_audio(name_record % num_audio, final_name % num_audio)
+                    list_final.append(final_name % num_audio)
+                    num_audio+=1
             print(mathml_output)
             print(list_final)
             return render(request, 'main/index.html',
-                              {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
-                               "name_record": list_final})
+                          {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
+                           "name_record": list_final})
     else:
         print("GET METHOD")
         return render(request, 'main/index.html', {})
