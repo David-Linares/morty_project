@@ -59,13 +59,13 @@
     <div class="row">
         <div class="col-sm-8">
             <label style="font-size:24px" tabindex="12">Ecuación Gráfica</label>
-            <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px">
+            <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px" tabindex="13">
                 {% for math in mathml_data %}
                     <div class="col-sm-4">
-                    {% with y=forloop.counter0|stringformat:"i" %}
+                    {% with y=forloop.counter0|stringformat:"s" %}
                     {% with val_sound="last_record"|add:y|add:".ogg" %}
                         <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
-                        <input type="button" value="Leer Ecuación {{ y|add:"1"}}" alt="Leer Ecuación {{ y|add:"1"}}" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
+                        <input type="button" value="Leer Ecuación" alt="Leer Ecuación" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
             {#            <img src="https://codigoenlata.files.wordpress.com/2015/11/pdf-cenlata.png" alt="Exportar ecuación a archivo PDF" height="100px" class="btn" tabindex="15">#}
             {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
                     {% endwith %}
@@ -90,8 +90,8 @@
     }
 
     function mostrar_alert(){
-        sound_name = document.getElementById("sound_name0");
-        if (sound_name.value.indexOf('ogg') != -1) {
+        sound_name = document.getElementById("sound_name");
+        if (sound_name.value == '/static/last_record.ogg') {
             alert('Las operaciones ya están disponibles de manera gráfica. \n Puede oirlas dando click al botón "Leer Ecuación"')
         }
     }
