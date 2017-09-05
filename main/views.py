@@ -20,11 +20,11 @@ def index(request):
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
             ############ Variables para Producción
-            # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-            # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+            name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+            final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
             ############ Variables para pruebas
-            name_record = "main/static/last_record%d.mp3"
-            final_name = "main/static/last_record%d.ogg"
+            # name_record = "main/static/last_record%d.mp3"
+            # final_name = "main/static/last_record%d.ogg"
             list_final = []
             mathml_output = []
             # Listado de ecuaciones escritas.
