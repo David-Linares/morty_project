@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
+import ast
 import re
+
+import pdfkit
 from django.db import connection
+from django.http import HttpResponse
 from django.shortcuts import render
 from gtts import gTTS
 from pydub import AudioSegment
+from asemi import settings
 import os
 import latex2mathml.converter
 
 # Falta corregir orden en el código.
-from asemi import settings
-
-from django import template
-
-register = template.Library()
-
-
-@register.filter()
-def to_int(value):
-    print(value)
-    return int(value)
 
 
 def index(request):
@@ -26,11 +20,11 @@ def index(request):
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
             ############ Variables para Producción
-            name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-            final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+            # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+            # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
             ############ Variables para pruebas
-            # name_record = "main/static/last_record%d.mp3"
-            # final_name = "main/static/last_record%d.ogg"
+            name_record = "main/static/last_record%d.mp3"
+            final_name = "main/static/last_record%d.ogg"
             list_final = []
             mathml_output = []
             # Listado de ecuaciones escritas.
@@ -119,3 +113,32 @@ def format_str(str):
     if str.startswith('\\'):
         return '\\'+str
     return str
+
+
+def pdf(request):
+    if request.POST:
+        nhtml = """
+         <html>
+              <head>
+              </head>
+              <body style="margin: 60px">
+                %s
+              </body>
+              <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+          </html>
+        """
+        data_mathml = request.POST.get("data_mathml", False)
+        if data_mathml:
+            data_mathml = ast.literal_eval(data_mathml)
+            data_mathml = [n.strip() for n in data_mathml]
+            print(type(data_mathml))
+            data_mathml = '<br><br>'.join(data_mathml)
+            nhtml = nhtml % data_mathml
+            print(nhtml)
+            pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+            response = HttpResponse(pdf)  # Generates the response as pdf response.
+            response['Content-Type'] = 'application/pdf'
+            response['Content-Disposition'] = 'filename=output.pdf'
+            return response  # returns the response.
+        else:
+            return None
