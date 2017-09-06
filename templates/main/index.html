@@ -37,10 +37,16 @@
         </div>
         <div class="col-sm-4" style="margin-top: 4%">
             <table border="1">
-                <tr>
-                    <td>Cos x</td>
-                    <td>Sin x</td>
-
+                <tr align="center">
+                    <td><button class="btn" style="background: none" latexval="\sin " cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/sin.png" %}" height="" width="60px" alt="Seno"></button></td>
+                    <td><button class="btn" style="background: none" latexval="\cos " cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/cos.png" %}" width="60px" alt="Coseno"></button></td>
+                    <td><button class="btn" style="background: none" latexval="\tan " cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/tan.png" %}" width="60px" alt="Tangente"></button></td>
+                    <td><button class="btn" style="background: none" latexval="\csc " cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/csc.png" %}" width="60px" alt="Cosecante"></button></td>
+                </tr>
+                <tr align="center">
+                    <td><button class="btn" style="background: none" latexval="\sec " cursorpos="4" onclick="setfunction(this)"><img src="{% static "img/sec.png" %}" width="60px" alt="Secante"></button></td>
+                    <td><button class="btn" style="background: none" latexval="\cot " cursorpos="4" onclick="setfunction(this)"><img src="{% static "img/cot.png" %}" width="60px" alt="Cotangente"></button></td>
+                    <td><button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button></td>
                 </tr>
             </table>
 {#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
@@ -72,7 +78,7 @@
                     {% endwith %}
                     {% endwith %}
                     </div>
-                    <div editable="true" readonly tabindex="18">{{ math | safe }}</div>
+                    <div editable="true" readonly tabindex="14">{{ math | safe }}</div>
                     <br>
                 {% endfor %}
             </div>
@@ -88,6 +94,10 @@
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="{% static "main/js/script.js" %}"></script>
 <script type="application/javascript">
@@ -100,8 +110,12 @@
 
     function mostrar_alert(){
         sound_name = document.getElementById("sound_name0");
-        if (sound_name.value.indexOf('ogg') != -1) {
-            alert('Las operaciones ya están disponibles de manera gráfica. \n Puede oirlas dando click al botón "Leer Ecuación"')
+        if (sound_name != null) {
+            if (sound_name.value.indexOf('ogg') != -1) {
+                alert('Las operaciones ya están disponibles de manera gráfica. \n Puede oirlas dando click al botón "Leer Ecuación"')
+            }
+        }else if(document.getElementById("ta_latex").value != '' && sound_name == null){
+            alert('No se pudo convertir la ecuación, \n Por favor verifique lo que ingreso e inténtelo nuevamente')
         }
     }
 

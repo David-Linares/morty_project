@@ -4,7 +4,7 @@ import re
 
 import pdfkit
 from django.db import connection
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render
 from gtts import gTTS
 from pydub import AudioSegment
@@ -19,55 +19,64 @@ def index(request):
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
-            ############ Variables para Producción
-            name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-            final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
-            ############ Variables para pruebas
-            # name_record = "main/static/last_record%d.mp3"
-            # final_name = "main/static/last_record%d.ogg"
-            list_final = []
-            mathml_output = []
-            # Listado de ecuaciones escritas.
-            equa_list = request.POST['latex_form'].split('\n')
-            print(equa_list)
-            num_audio = 0
-            for index, value in enumerate(equa_list):
-                print(num_audio)
-                # Quita espacios que no sirven
-                # Convierte la ecuación latex a mathml
-                value = value.rstrip()
-                if value:
-                    mathml_output.append(latex2mathml.converter.convert(value))
-                    matches_list = find_matches(value)
-                    tts_str = ""
-                    if len(matches_list) > 0:
-                        for m in matches_list:
-                            if "\r" in m:
-                                m.replace("\r", "")
-                            if m != "":
-                                tts_str += search_string_db(m)
-                    else:
-                        tts_str = value
-                    if 'frac' in value:
-                        tts_str = tts_str.replace('}{', ' sobre ')
-                    # Genera el código para generar el audio de lectura.
-                    text = gTTS(text=tts_str, lang='es')
-                    # Borra los archivos anteriores
-                    try:
-                        os.remove(name_record % index)
-                    except:
-                        pass
-                    # Obtiene fecha para el nombre del archivo
-                    text.save(name_record % num_audio)
-                    # Convierte el audio
-                    convert_audio(name_record % num_audio, final_name % num_audio)
-                    list_final.append(final_name % num_audio)
-                    num_audio+=1
-            print(mathml_output)
-            print(list_final)
-            return render(request, 'main/index.html',
-                          {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
-                           "name_record": list_final})
+            try:
+                ############ Variables para Producción
+                # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+                ############ Variables para pruebas
+                name_record = "main/static/last_record%d.mp3"
+                final_name = "main/static/last_record%d.ogg"
+                list_final = []
+                mathml_output = []
+                # Listado de ecuaciones escritas.
+                equa_list = request.POST['latex_form'].split('\n')
+                print(equa_list)
+                num_audio = 0
+                for index, value in enumerate(equa_list):
+                    print(num_audio)
+                    # Quita espacios que no sirven
+                    # Convierte la ecuación latex a mathml
+                    value = value.rstrip()
+                    if value:
+                        mathml_output.append(latex2mathml.converter.convert(value))
+                        matches_list = find_matches(value)
+                        tts_str = ""
+                        if len(matches_list) > 0:
+                            for m in matches_list:
+                                if "\r" in m:
+                                    m.replace("\r", "")
+                                if m != "":
+                                    tts_str += search_string_db(m)
+                        else:
+                            tts_str = value
+                        if 'frac' in value:
+                            tts_str = tts_str.replace('}{', ' sobre ')
+                        # Genera el código para generar el audio de lectura.
+                        text = gTTS(text=tts_str, lang='es')
+                        # Borra los archivos anteriores
+                        try:
+                            os.remove(name_record % index)
+                        except:
+                            pass
+                        # Obtiene fecha para el nombre del archivo
+                        text.save(name_record % num_audio)
+                        # Convierte el audio
+                        convert_audio(name_record % num_audio, final_name % num_audio)
+                        list_final.append(final_name % num_audio)
+                        num_audio+=1
+                print(mathml_output)
+                print(list_final)
+                return render(request, 'main/index.html',
+                              {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
+                               "name_record": list_final})
+            except Exception as e:
+                print(e)
+                return render(request, 'main/index.html',
+                              {"mathml_data": "", "latex_form": request.POST.get('latex_form', ""),
+                               "name_record": ""})
+        else:
+            print("GET METHOD")
+            return render(request, 'main/index.html', {})
     else:
         print("GET METHOD")
         return render(request, 'main/index.html', {})
@@ -121,24 +130,30 @@ def pdf(request):
          <html>
               <head>
               </head>
-              <body style="margin: 60px">
+              <body style="margin: 60px; font-size: 25px">
                 %s
               </body>
               <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
           </html>
         """
         data_mathml = request.POST.get("data_mathml", False)
-        if data_mathml:
-            data_mathml = ast.literal_eval(data_mathml)
-            data_mathml = [n.strip() for n in data_mathml]
-            print(type(data_mathml))
-            data_mathml = '<br><br>'.join(data_mathml)
-            nhtml = nhtml % data_mathml
-            print(nhtml)
-            pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
-            response = HttpResponse(pdf)  # Generates the response as pdf response.
-            response['Content-Type'] = 'application/pdf'
-            response['Content-Disposition'] = 'filename=output.pdf'
-            return response  # returns the response.
-        else:
-            return None
+        try:
+            if data_mathml:
+                data_mathml = ast.literal_eval(data_mathml)
+                data_mathml = [n.strip() for n in data_mathml]
+                print(type(data_mathml))
+                data_mathml = '<br><br>'.join(data_mathml)
+                nhtml = nhtml % data_mathml
+                print(nhtml)
+                pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+                response = HttpResponse(pdf)  # Generates the response as pdf response.
+                response['Content-Type'] = 'application/pdf'
+                response['Content-Disposition'] = 'filename=output.pdf'
+                return response  # returns the response.
+            else:
+                raise Http404("Not found")
+        except Exception as e:
+            raise Http404("Not found")
+
+    else:
+        return render(request, 'main/index.html', {})
