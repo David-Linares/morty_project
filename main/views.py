@@ -16,16 +16,21 @@ import latex2mathml.converter
 
 
 def index(request):
+    #Consulta los símbolos de la tabla de apoyo.
+    query = "select * from guia_expresiones where expresion_estado = 1"
+    data_symbols = query_str(query)
+    print(data_symbols)
+
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-                final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
                 ############ Variables para pruebas
-                # name_record = "main/static/last_record%d.mp3"
-                # final_name = "main/static/last_record%d.ogg"
+                name_record = "main/static/last_record%d.mp3"
+                final_name = "main/static/last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
@@ -68,18 +73,18 @@ def index(request):
                 print(list_final)
                 return render(request, 'main/index.html',
                               {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
-                               "name_record": list_final})
+                               "name_record": list_final, "data_symbols": data_symbols})
             except Exception as e:
                 print(e)
                 return render(request, 'main/index.html',
                               {"mathml_data": "", "latex_form": request.POST.get('latex_form', ""),
-                               "name_record": ""})
+                               "name_record": "", "data_symbols": data_symbols})
         else:
             print("GET METHOD")
-            return render(request, 'main/index.html', {})
+            return render(request, 'main/index.html', {"data_symbols": data_symbols})
     else:
         print("GET METHOD")
-        return render(request, 'main/index.html', {})
+        return render(request, 'main/index.html', {"data_symbols": data_symbols})
 
 
 def find_matches(text):
@@ -97,7 +102,9 @@ def convert_audio(name_record, final_name):
 
 
 def search_string_db(st):
-    data = query_str(st)
+    st = format_str(st)
+    query = "select * from expresiones_matematicas where expresion_latex = '%s'" % (st)
+    data = query_str(query)
     if len(data) > 0:
         for d in data:
             print(d[3])
@@ -105,10 +112,8 @@ def search_string_db(st):
     return st
 
 
-def query_str(st):
+def query_str(query):
     try:
-        st = format_str(st)
-        query = "select * from expresiones_matematicas where expresion_latex = '%s'" % (st)
         with connection.cursor() as cursor:
             cursor.execute(query);
             data = cursor.fetchall()
