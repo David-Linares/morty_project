@@ -135,6 +135,6 @@ STATICFILES_DIRS = [
 '''Project Constants'''
 
 FUNCTIONS = {
-    'FRAC':r"(\\frac|\{\d+}|\{\d+}|[^_])"
+    'FRAC':r"(\\frac|\{\d+}|\{\d+}|[^_]|\\sin|\\cos|\\tan|\\csc|\\sec|\\cot|\\ln|\\log|\\infty|\\pi|\\mu|\\cap|\\cup|\\leq|\\geq|\\rightarrow|\\leftrightarrow|\\leftarrow|\\forall|\\exists|\\neg|\\nexists|\\sum|\\int|\\oint|\\sqrt)"
 }
 
