@@ -43,10 +43,10 @@
                             </tr>
                         {% endif %}
                         <tr align="center">
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="60px" alt="{{ sym.4 }}"></button></td>
+                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.5 }}" alt="{{ sym.4 }}"></button></td>
                     {% endif %}
                     {% if not forloop.counter0|divisibleby:4 %}
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="60px" alt="{{ sym.4 }}"></button></td>
+                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.5 }}" alt="{{ sym.4 }}"></button></td>
                     {% endif %}
                 {% endfor %}
             </table>
