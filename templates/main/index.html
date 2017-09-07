@@ -3,7 +3,7 @@
 {% load static %}
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
     <title>..::ASEMI::..</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
@@ -21,21 +21,46 @@
             </p>
         </div>
         <div class="col-xs-12 col-sm-4">
-            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="200px" tabindex="6">
-            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="120px" tabindex="7">
+            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="58%" tabindex="6">
+            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="27%" tabindex="7">
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-8 col-xs-12">
             <label style="font-size: 24px" tabindex="8">Escriba ecuación en lenguaje Latex</label>
             <form action="/" method="post">
                 {% csrf_token %}
-                <textarea cols="80" rows="10" name="latex_form" style="border: 1px solid #777777" tabindex="9" id="ta_latex">{{ latex_form }}</textarea>
+                <textarea name="latex_form" style="border: 1px solid #777777; width: 90%; height: 250px" tabindex="9" id="ta_latex">{{ latex_form }}</textarea>
                 <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="10">
 {#                <input type="submit" value="Cargar Ecuación" alt="Cargar Ecuación" class="btn btn-info" tabindex="11">#}
             </form>
+            <br>
+            <div class="col-sm-12 col-xs-12">
+                <label style="font-size:24px" tabindex="12">Ecuación Gráfica</label>
+                <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px">
+                    {% for math in mathml_data %}
+                        <div class="col-sm-4">
+                        {% with y=forloop.counter0|stringformat:"i" %}
+                        {% with val_sound="last_record"|add:y|add:".ogg" %}
+                            <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
+                            <input type="button" value="Leer Ecuación {{ y|add:"1"}}" alt="Leer Ecuación {{ y|add:"1"}}" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
+                {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
+                        {% endwith %}
+                        {% endwith %}
+                        </div>
+                        <div editable="true" readonly tabindex="14">{{ math | safe }}</div>
+                        <br>
+                    {% endfor %}
+                </div>
+                <form action="/export/" method="POST" target="_blank">
+                    <input type="hidden" value="{{ mathml_data }}" name="data_mathml">
+                    {% csrf_token %}
+                    <button><img src="{% static "img/pdf.png" %}" alt="Exportar ecuación a archivo PDF" height="70px" class="btn" tabindex="15"></button>
+                </form>
+                <br>
+            </div>
         </div>
-        <div class="col-sm-4" style="margin-top: 4%">
+        <div class="col-sm-4 col-xs-12" style="margin-top: 4%">
             <table border="1" bordercolor="#447e9b">
                 {% for sym in data_symbols %}
                     {% if forloop.counter0|divisibleby:4 %}
@@ -43,10 +68,10 @@
                             </tr>
                         {% endif %}
                         <tr align="center">
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.5 }}" alt="{{ sym.4 }}"></button></td>
+                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                     {% endif %}
                     {% if not forloop.counter0|divisibleby:4 %}
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.5 }}" alt="{{ sym.4 }}"></button></td>
+                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                     {% endif %}
                 {% endfor %}
             </table>
@@ -66,29 +91,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-8">
-            <label style="font-size:24px" tabindex="12">Ecuación Gráfica</label>
-            <div class="col-sm-8" style="min-height: 150px; min-width: 90%; font-size: 30px">
-                {% for math in mathml_data %}
-                    <div class="col-sm-4">
-                    {% with y=forloop.counter0|stringformat:"i" %}
-                    {% with val_sound="last_record"|add:y|add:".ogg" %}
-                        <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
-                        <input type="button" value="Leer Ecuación {{ y|add:"1"}}" alt="Leer Ecuación {{ y|add:"1"}}" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
-            {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
-                    {% endwith %}
-                    {% endwith %}
-                    </div>
-                    <div editable="true" readonly tabindex="14">{{ math | safe }}</div>
-                    <br>
-                {% endfor %}
-            </div>
-            <form action="/export/" method="POST" target="_blank">
-                <input type="hidden" value="{{ mathml_data }}" name="data_mathml">
-                {% csrf_token %}
-                <button><img src="{% static "img/pdf.png" %}" alt="Exportar ecuación a archivo PDF" height="70px" class="btn" tabindex="15"></button>
-            </form>
-        </div>
+
     </div>
 </div>
 </body>
