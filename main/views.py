@@ -19,48 +19,79 @@ def index(request):
     #Consulta los símbolos de la tabla de apoyo.
     query = "select * from guia_expresiones where expresion_estado = 1"
     data_symbols = query_str(query)
-    print(data_symbols)
 
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-                final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
                 ############ Variables para pruebas
-                # name_record = "main/static/last_record%d.mp3"
-                # final_name = "main/static/last_record%d.ogg"
+                name_record = "main/static/last_record%d.mp3"
+                final_name = "main/static/last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
                 equa_list = request.POST['latex_form'].split('\n')
-                print(equa_list)
                 num_audio = 0
                 for index, value in enumerate(equa_list):
-                    print(num_audio)
                     # Quita espacios que no sirven
                     # Convierte la ecuación latex a mathml
                     value = value.rstrip()
                     if value:
+                        print("paso 1")
+                        print(value)
+                        value1 = value[:]
                         mathml_output.append(latex2mathml.converter.convert(value))
                         matches_list = find_matches(value)
-                        tts_str = ""
+                        tts_str = value[:]
+                        print("paso 3")
+                        print(matches_list)
                         if len(matches_list) > 0:
+                            print("3.1")
                             for m in matches_list:
+                                print("3.2")
+                                print(m)
                                 if "\r" in m:
+                                    print("3.3")
                                     m.replace("\r", "")
                                 if m != "":
-                                    tts_str += search_string_db(m)
+                                    print("3.4")
+                                    strdb = search_string_db(m)
+                                    tts_str = tts_str.replace(m, strdb)
+                                    print(tts_str)
                         else:
-                            tts_str = value
-                        if 'frac' in value:
+                            print("3.5")
+                            tts_str = value1
+                        print("paso 4")
+                        print(tts_str)
+                        print(value)
+                        print(value1)
+                        if 'frac' in value1:
                             tts_str = tts_str.replace('}{', ' sobre ')
                         # Genera el código para generar el audio de lectura.
+                        elif 'oint' in value1:
+                            tts_str = tts_str.replace('(', ' (')
+                            tts_str = tts_str.replace('_{', ' desde ')
+                            tts_str = tts_str.replace('}^{', ' hasta ')
+                            tts_str = tts_str.replace(' (', ' de ')
+                        elif 'int' in value1:
+                            tts_str = tts_str.replace('(', ' (')
+                            tts_str = tts_str.replace('_{', ' desde ')
+                            tts_str = tts_str.replace('}^{', ' hasta ')
+                            tts_str = tts_str.replace(' (', ' de ')
+                        elif 'sqrt[' in value1:
+                            tts_str = tts_str.replace('[', ' ')
+                            tts_str = tts_str.replace(']{', ' de ')
+                        elif 'sqrt{' in value1:
+                            tts_str = tts_str.replace('{', ' cuadrada de ')
+                        print("paso 5")
+                        print(tts_str)
                         text = gTTS(text=tts_str, lang='es')
                         # Borra los archivos anteriores
                         try:
-                            os.remove(name_record % index)
+                            os.remove(name_record % num_audio)
                         except:
                             pass
                         # Obtiene fecha para el nombre del archivo
@@ -69,8 +100,6 @@ def index(request):
                         convert_audio(name_record % num_audio, final_name % num_audio)
                         list_final.append(final_name % num_audio)
                         num_audio+=1
-                print(mathml_output)
-                print(list_final)
                 return render(request, 'main/index.html',
                               {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
                                "name_record": list_final, "data_symbols": data_symbols})
@@ -80,16 +109,16 @@ def index(request):
                               {"mathml_data": "", "latex_form": request.POST.get('latex_form', ""),
                                "name_record": "", "data_symbols": data_symbols})
         else:
-            print("GET METHOD")
             return render(request, 'main/index.html', {"data_symbols": data_symbols})
     else:
-        print("GET METHOD")
         return render(request, 'main/index.html', {"data_symbols": data_symbols})
 
 
 def find_matches(text):
+    print("paso 2")
     regex = settings.FUNCTIONS.get("FRAC")
     matches = re.findall(regex, text)
+    print(matches)
     return matches
 
 
@@ -104,10 +133,11 @@ def convert_audio(name_record, final_name):
 def search_string_db(st):
     st = format_str(st)
     query = "select * from expresiones_matematicas where expresion_latex = '%s'" % (st)
+    print(query)
     data = query_str(query)
+    print(data)
     if len(data) > 0:
         for d in data:
-            print(d[3])
             return d[3]
     return st
 
@@ -146,10 +176,8 @@ def pdf(request):
             if data_mathml:
                 data_mathml = ast.literal_eval(data_mathml)
                 data_mathml = [n.strip() for n in data_mathml]
-                print(type(data_mathml))
                 data_mathml = '<br><br>'.join(data_mathml)
                 nhtml = nhtml % data_mathml
-                print(nhtml)
                 pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
                 response = HttpResponse(pdf)  # Generates the response as pdf response.
                 response['Content-Type'] = 'application/pdf'
