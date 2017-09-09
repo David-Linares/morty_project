@@ -25,6 +25,18 @@ yum install ffmpeg ffmpeg-devel -y
 yum install python36u-mod_wsgi
 
 
+--PDFKIT
+
+wget http://download.gna.org/wkhtmltopdf/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+unxz wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+tar -xvf wkhtmltox-0.12.4_linux-generic-amd64.tar
+mv wkhtmltox/bin/* /usr/local/bin/
+rm -rf wkhtmltox
+rm -f wkhtmltox-0.12.4_linux-generic-amd64.tar
+
+
+
+
 --
 
 - Trigonométricas (sin, cos, tan, cot, csc, sec, ln, log, infty)

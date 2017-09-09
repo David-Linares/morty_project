@@ -162,13 +162,16 @@ def format_str(str):
 def pdf(request):
     if request.POST:
         nhtml = """
+        <!DOCTYPE html>
          <html>
               <head>
+                <meta charset="UTF-8">
+                <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
               </head>
               <body style="margin: 60px; font-size: 25px">
                 %s
               </body>
-              <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+              
           </html>
         """
         data_mathml = request.POST.get("data_mathml", False)
@@ -177,6 +180,7 @@ def pdf(request):
                 data_mathml = ast.literal_eval(data_mathml)
                 data_mathml = [n.strip() for n in data_mathml]
                 data_mathml = '<br><br>'.join(data_mathml)
+                data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
                 nhtml = nhtml % data_mathml
                 print(nhtml)
                 pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
@@ -187,6 +191,7 @@ def pdf(request):
             else:
                 raise Http404("Not found")
         except Exception as e:
+            print(e)
             raise Http404("Not found")
 
     else:
