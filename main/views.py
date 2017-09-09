@@ -178,6 +178,7 @@ def pdf(request):
                 data_mathml = [n.strip() for n in data_mathml]
                 data_mathml = '<br><br>'.join(data_mathml)
                 nhtml = nhtml % data_mathml
+                print(nhtml)
                 pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
                 response = HttpResponse(pdf)  # Generates the response as pdf response.
                 response['Content-Type'] = 'application/pdf'
