@@ -166,6 +166,8 @@ def pdf(request):
          <html>
               <head>
                 <meta charset="UTF-8">
+                <script src="http://fred-wang.github.io/mathml.css/mspace.js"></script>
+                <script src="http://fred-wang.github.io/mathjax.js/mpadded.js"></script>
                 <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
               </head>
               <body style="margin: 60px; font-size: 25px">
