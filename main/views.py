@@ -11,6 +11,7 @@ from django.shortcuts import render
 from gtts import gTTS
 from pydub import AudioSegment
 from asemi import settings
+from uuid import getnode as get_mac
 import os
 import latex2mathml.converter
 
@@ -19,19 +20,19 @@ import latex2mathml.converter
 
 def index(request):
     #Consulta los símbolos de la tabla de apoyo.
-    query = "select * from guia_expresiones where expresion_estado = 1"
+    query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
-
+    mac = get_mac()
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-                # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.ogg"
                 ############ Variables para pruebas
-                name_record = "main/static/last_record%d.mp3"
-                final_name = "main/static/last_record%d.ogg"
+                name_record = "main/static/"+str(mac)+"last_record%d.mp3"
+                final_name = "main/static/"+str(mac)+"last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
@@ -104,16 +105,16 @@ def index(request):
                         num_audio+=1
                 return render(request, 'main/index.html',
                               {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
-                               "name_record": list_final, "data_symbols": data_symbols})
+                               "name_record": list_final, "data_symbols": data_symbols, "upload_file": False, "val_sound": str(mac)+"last_record"})
             except Exception as e:
                 print(e)
                 return render(request, 'main/index.html',
                               {"mathml_data": "", "latex_form": request.POST.get('latex_form', ""),
-                               "name_record": "", "data_symbols": data_symbols})
+                               "name_record": "", "data_symbols": data_symbols, "upload_file": False})
         else:
-            return render(request, 'main/index.html', {"data_symbols": data_symbols})
+            return render(request, 'main/index.html', {"data_symbols": data_symbols, "upload_file": False})
     else:
-        return render(request, 'main/index.html', {"data_symbols": data_symbols})
+        return render(request, 'main/index.html', {"data_symbols": data_symbols,"upload_file": False})
 
 
 def find_matches(text):
@@ -203,27 +204,35 @@ def pdf(request):
 
 
 def download_json(request):
-    file_path = "data.json"
-    if request.POST.get("equation_data", False):
-        f = open(file_path, "w")
-        data = {"data": request.POST.get("equation_data", False)}
-        print(data)
-        data = jwt.encode(data, 'asemi2017', algorithm='HS256')
-        f.write(data.decode("utf-8"))
-        f.close()
-        if os.path.exists(file_path):
-            with open(file_path, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="application/json")
-                response['Content-Disposition'] = 'attachment; filename=export.json'
-                return response
-    raise Http404
+    query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
+    data_symbols = query_str(query)
+    try:
+        file_path = "data.json"
+        if request.POST.get("equation_data", False):
+            f = open(file_path, "w")
+            data = {"data": request.POST.get("equation_data", False)}
+            print(data)
+            f.write(str(data))
+            f.close()
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/json")
+                    response['Content-Disposition'] = 'attachment; filename=export.json'
+                    return response
+        raise Http404
+    except Exception as e:
+        print(e)
+        return render(request, 'main/index.html', {"data_symbols": data_symbols})
 
 
 def import_json(request):
-    upload = request.FILES['uploaded_file'].read()
-    print(upload)
-    query = "select * from guia_expresiones where expresion_estado = 1"
+    query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
-    return render(request, 'main/index.html',
-                  {"mathml_data": "", "latex_form": jwt.decode(upload, 'asemi2017', algorithms=['HS256'])['data'],
-                   "name_record": "", "data_symbols": data_symbols})
+    try:
+        upload = eval(request.FILES['uploaded_file'].read())
+        print(upload)
+        return render(request, 'main/index.html',
+                      {"mathml_data": "", "latex_form": upload['data'],
+                       "name_record": "", "data_symbols": data_symbols, "upload_file": True})
+    except:
+        return render(request, 'main/index.html', {"data_symbols": data_symbols})

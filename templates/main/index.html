@@ -13,16 +13,16 @@
     <div class="row">
         <div class="col-xs-12 col-sm-8">
             <p style="text-align: center">
-                <label style="font-size: 25px" tabindex="1">ASEMI</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="2">Proyecto de grado</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="3">Desarrollado por: Ximena Garzón y Daniel Beltrán</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="4">Director: Ingeniero Mario Silva</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="5">Programa Ingeniería de Sistemas</label><br/>
+                <label style="font-size: 25px" tabindex="1000">ASEMI</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Proyecto de grado</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Desarrollado por: Ximena Garzón y Daniel Beltrán</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Director: Ingeniero Mario Silva</label><br/>
+                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Programa Ingeniería de Sistemas</label><br/>
             </p>
         </div>
         <div class="col-xs-12 col-sm-4">
-            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="58%" tabindex="6">
-            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="27%" tabindex="7">
+            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="58%" tabindex="1000">
+            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="27%" tabindex="1000">
         </div>
     </div>
     <div class="row">
@@ -47,67 +47,60 @@
                 <button><img src="{% static "img/json.png" %}" alt="Exportar ecuación a archivo JSON" height="70px" class="btn" tabindex="15"></button>
             </form>
             <form action="/import/" enctype="multipart/form-data" method="POST" style="display: inline-block; vertical-align: top">
+                <input type="hidden" value="{{ upload_file }}" name="upload_file" id="upload_file">
                 {% csrf_token %}
-                <input type="file" name="uploaded_file">
+                <input type="file" name="uploaded_file" tabindex="15">
                 <button><img src="{% static "img/import.png" %}" alt="Importar archivo" height="40px" class="btn" tabindex="15"></button>
             </form>
         </div>
         <div class="col-sm-4 col-xs-12" style="margin-top: 4%">
             <div class="panel-group" id="accordion">
+            {% for sym in data_symbols %}
+            {% ifchanged sym.7 %}
+                {% if forloop.counter0 > 0 %}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                      Grupo 1
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne{{ sym.0 }}">
+                      {{ sym.7 }}
                     </a>
                   </h4>
                 </div>
-                <div id="collapseOne" class="panel-collapse collapse in">
-                  <div class="panel-body">
-                    <table border="1" bordercolor="#447e9b">
-                        {% for sym in data_symbols %}
-                            {% if forloop.counter0|divisibleby:4 %}
-                                {% if forloop.counter0 > 0 %}
-                                    </tr>
-                                {% endif %}
-                                <tr align="center">
-                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                <div id="collapseOne{{ sym.0 }}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table border="1" bordercolor="#447e9b" width="100%">
+                        {% if forloop.counter0|divisibleby:4 %}
+                            {% if forloop.counter0 > 0 %}
+                                </tr>
                             {% endif %}
-                            {% if not forloop.counter0|divisibleby:4 %}
-                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
-                            {% endif %}
-                        {% endfor %}
-                    </table>
+                            <tr align="center">
+                            <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                        {% endif %}
+                        {% if not forloop.counter0|divisibleby:4 %}
+                            <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                        {% endif %}
+            {% else %}
+                {% if forloop.counter0|divisibleby:4 %}
+                    {% if forloop.counter0 > 0 %}
+                        </tr>
+                    {% endif %}
+                    <tr align="center">
+                    <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                {% endif %}
+                {% if not forloop.counter0|divisibleby:4 %}
+                    <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                {% endif %}
+            {% endifchanged %}
+            {% endfor %}
+            </table>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                      Grupo 2
-                    </a>
-                  </h4>
-                </div>
-                <div id="collapseThree" class="panel-collapse collapse">
-                  <div class="panel-body">
-                    <table border="1" bordercolor="#447e9b">
-                        {% for sym in data_symbols %}
-                            {% if forloop.counter0|divisibleby:4 %}
-                                {% if forloop.counter0 > 0 %}
-                                    </tr>
-                                {% endif %}
-                                <tr align="center">
-                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
-                            {% endif %}
-                            {% if not forloop.counter0|divisibleby:4 %}
-                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
-                            {% endif %}
-                        {% endfor %}
-                    </table>
-                  </div>
-                </div>
-              </div>
             </div>
         </div>
     </div>
@@ -118,7 +111,7 @@
                 {% for math in mathml_data %}
                     <div class="col-sm-4">
                     {% with y=forloop.counter0|stringformat:"i" %}
-                    {% with val_sound="last_record"|add:y|add:".ogg" %}
+                    {% with val_sound=val_sound|add:y|add:".ogg" %}
                         <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
                         <input type="button" value="Leer Linea {{ y|add:"1"}}" alt="Leer Linea {{ y|add:"1"}}" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
             {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
@@ -163,8 +156,10 @@
             if (sound_name.value.indexOf('ogg') != -1) {
                 alert('Las operaciones ya están disponibles de manera gráfica. \n Puede oirlas dando click al botón "Leer Ecuación"')
             }
-        }else if(document.getElementById("ta_latex").value != '' && sound_name == null){
+        }else if(document.getElementById("ta_latex").value != '' && sound_name == null && document.getElementById("upload_file").value == "False"){
             alert('No se pudo convertir la ecuación, \n Por favor verifique lo que ingreso e inténtelo nuevamente')
+        }else if(document.getElementById("ta_latex").value != '' && sound_name == null && document.getElementById("upload_file").value == "True"){
+            alert('Datos importados correctamente')
         }
     }
 
