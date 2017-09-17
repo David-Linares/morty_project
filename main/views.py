@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import ast
+import json
 import re
 
+import jwt
 import pdfkit
 from django.db import connection
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -25,11 +27,11 @@ def index(request):
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
-                final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/last_record%d.ogg"
                 ############ Variables para pruebas
-                # name_record = "main/static/last_record%d.mp3"
-                # final_name = "main/static/last_record%d.ogg"
+                name_record = "main/static/last_record%d.mp3"
+                final_name = "main/static/last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
@@ -198,3 +200,30 @@ def pdf(request):
 
     else:
         return render(request, 'main/index.html', {})
+
+
+def download_json(request):
+    file_path = "data.json"
+    if request.POST.get("equation_data", False):
+        f = open(file_path, "w")
+        data = {"data": request.POST.get("equation_data", False)}
+        print(data)
+        data = jwt.encode(data, 'asemi2017', algorithm='HS256')
+        f.write(data.decode("utf-8"))
+        f.close()
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/json")
+                response['Content-Disposition'] = 'attachment; filename=export.json'
+                return response
+    raise Http404
+
+
+def import_json(request):
+    upload = request.FILES['uploaded_file'].read()
+    print(upload)
+    query = "select * from guia_expresiones where expresion_estado = 1"
+    data_symbols = query_str(query)
+    return render(request, 'main/index.html',
+                  {"mathml_data": "", "latex_form": jwt.decode(upload, 'asemi2017', algorithms=['HS256'])['data'],
+                   "name_record": "", "data_symbols": data_symbols})

@@ -36,40 +36,79 @@
 {#                <input type="submit" value="Cargar Ecuación" alt="Cargar Ecuación" class="btn btn-info" tabindex="11">#}
             </form>
             <br>
-            <form action="/export/" method="POST" target="_blank">
+            <form action="/export/" method="POST" target="_blank" style="display: inline-block; vertical-align: top">
                 <input type="hidden" value="{{ mathml_data }}" name="data_mathml">
                 {% csrf_token %}
                 <button><img src="{% static "img/pdf.png" %}" alt="Exportar ecuación a archivo PDF" height="70px" class="btn" tabindex="15"></button>
             </form>
+            <form action="/export/json" method="POST" target="_blank" style="display: inline-block; vertical-align: top">
+                <input type="hidden" value="{{ latex_form }}" name="equation_data">
+                {% csrf_token %}
+                <button><img src="{% static "img/json.png" %}" alt="Exportar ecuación a archivo JSON" height="70px" class="btn" tabindex="15"></button>
+            </form>
+            <form action="/import/" enctype="multipart/form-data" method="POST" style="display: inline-block; vertical-align: top">
+                {% csrf_token %}
+                <input type="file" name="uploaded_file">
+                <button><img src="{% static "img/import.png" %}" alt="Importar archivo" height="40px" class="btn" tabindex="15"></button>
+            </form>
         </div>
         <div class="col-sm-4 col-xs-12" style="margin-top: 4%">
-            <table border="1" bordercolor="#447e9b">
-                {% for sym in data_symbols %}
-                    {% if forloop.counter0|divisibleby:4 %}
-                        {% if forloop.counter0 > 0 %}
-                            </tr>
-                        {% endif %}
-                        <tr align="center">
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
-                    {% endif %}
-                    {% if not forloop.counter0|divisibleby:4 %}
-                        <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
-                    {% endif %}
-                {% endfor %}
-            </table>
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\sin" cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/sin.png" %}" height="40px" alt="Función Seno"></button>#}
-{#            <button class="btn" style="background: none" latexval="\cos" cursorpos="5" onclick="setfunction(this)"><img src="{% static "img/cos.png" %}" height="40px" alt="Función Coseno"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
-{#            <button class="btn" style="background: none" latexval="\frac{}{}" cursorpos="6" onclick="setfunction(this)"><img src="{% static "img/fraccion.png" %}" height="40px" alt="fraccion"></button>#}
+            <div class="panel-group" id="accordion">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                      Grupo 1
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <table border="1" bordercolor="#447e9b">
+                        {% for sym in data_symbols %}
+                            {% if forloop.counter0|divisibleby:4 %}
+                                {% if forloop.counter0 > 0 %}
+                                    </tr>
+                                {% endif %}
+                                <tr align="center">
+                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            {% endif %}
+                            {% if not forloop.counter0|divisibleby:4 %}
+                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                      Grupo 2
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <table border="1" bordercolor="#447e9b">
+                        {% for sym in data_symbols %}
+                            {% if forloop.counter0|divisibleby:4 %}
+                                {% if forloop.counter0 > 0 %}
+                                    </tr>
+                                {% endif %}
+                                <tr align="center">
+                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            {% endif %}
+                            {% if not forloop.counter0|divisibleby:4 %}
+                                <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
     </div>
     <div class="row">
