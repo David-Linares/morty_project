@@ -217,16 +217,44 @@ def pdf(request):
     data_mathml = request.POST.get("data_mathml", False)
     data_mathml = ast.literal_eval(data_mathml)
     data_mathml = [n.strip() for n in data_mathml]
-    data_mathml = '<br><br>'.join(data_mathml)
-    data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
+    data_mathml = '<br>'.join(data_mathml)
+    # data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
     print(data_mathml)
 
     template = get_template('pdf/pdf_template.html')
     html = template.render({"data": data_mathml})
+
+    pdf = pdfkit.PDFKit(html, "string").to_pdf()
+
+    # pdf = pdfkit.from_string(html.encode("utf-8"), "static/img/"+str(mac)+"out.pdf")
+
+    # f = open("static/img/"+str(mac)+"out.pdf")
+
+    #
+    # img_name = str(mac)+"out.png"
+    #
+    # imgkit.from_string(html, "static/img/"+img_name)
+    #
+    # nhtml = """
+    #         <!DOCTYPE html>
+    #          <html>
+    #               <head>
+    #                 <meta charset="UTF-8">
+    #                 <script src="http://fred-wang.github.io/mathml.css/mspace.js"></script>
+    #                 <script src="http://fred-wang.github.io/mathjax.js/mpadded.js"></script>
+    #                 <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    #               </head>
+    #               <body style="margin: 60px">
+    #                 <img src="http://localhost:8000/static/img/%s">
+    #               </body>
+    #
+    #           </html>
+    #         """
+    # nhtml = nhtml % img_name
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
-    # response = HttpResponse(result.getvalue(), content_type="application/pdf")
-    response = HttpResponse(html)
+    # pdf = pisa.pisaDocument(BytesIO(nhtml.encode("utf-8")), result)
+    response = HttpResponse(pdf, content_type="application/pdf")
+    # response = HttpResponse(html)
     return response  # returns the response.
 
 
