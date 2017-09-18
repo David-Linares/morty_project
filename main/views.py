@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import ast
 import re
+from io import BytesIO
+
 import pdfkit
 from django.db import connection
 from django.http import HttpResponse, Http404
@@ -10,6 +12,7 @@ from django.template.loader import get_template
 from gtts import gTTS
 import imgkit
 from pydub import AudioSegment
+from xhtml2pdf import pisa
 
 from asemi import settings
 from uuid import getnode as get_mac
@@ -219,12 +222,11 @@ def pdf(request):
     print(data_mathml)
 
     template = get_template('pdf/pdf_template.html')
-    html = template.render({"data": data_mathml.encode("utf-8")})
-    print(html)
-    # pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+    html = template.render({"data": data_mathml})
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
+    # response = HttpResponse(result.getvalue(), content_type="application/pdf")
     response = HttpResponse(html)
-    # response['Content-Type'] = 'application/pdf'
-    # response['Content-Disposition'] = 'filename=output.png'
     return response  # returns the response.
 
 
