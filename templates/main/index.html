@@ -37,7 +37,7 @@
             </form>
             <br>
             <form action="/export/" method="POST" target="_blank" style="display: inline-block; vertical-align: top">
-                <input type="text" value="{{ mathml_data }}" name="data_mathml">
+                <input type="hidden" value="{{ mathml_data }}" name="data_mathml">
                 {% csrf_token %}
                 <button id="pdf_button" disabled="true"><img src="{% static "img/pdf.png" %}" alt="Descargar ecuación para presentar en formato PDF" height="70px" class="btn" tabindex="7"></button>
             </form>

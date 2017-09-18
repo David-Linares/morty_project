@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import ast
-import json
 import re
-
-import jwt
 import pdfkit
 from django.db import connection
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
+from django.template import Context
+from django.template.loader import get_template
 from gtts import gTTS
 from pydub import AudioSegment
+
 from asemi import settings
 from uuid import getnode as get_mac
 import os
@@ -162,7 +162,7 @@ def format_str(str):
     return str
 
 
-def pdf(request):
+def pdf2(request):
     if request.POST:
         nhtml = """
         <!DOCTYPE html>
@@ -206,6 +206,25 @@ def pdf(request):
 
     else:
         return render(request, 'main/index.html', {})
+
+
+def pdf(request):
+    data_mathml = request.POST.get("data_mathml", False)
+    data_mathml = ast.literal_eval(data_mathml)
+    data_mathml = [n.strip() for n in data_mathml]
+    data_mathml = '<br><br>'.join(data_mathml)
+    data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
+    print(data_mathml)
+
+    template = get_template('pdf/pdf_template.html')
+    html = template.render({"data": data_mathml.encode("utf-8")})
+    print(html)
+    pdf = pdfkit.PDFKit(html, "string").to_pdf()
+    response = HttpResponse(pdf)  # Generates the response as pdf response.
+    response['Content-Type'] = 'application/pdf'
+    response['Content-Disposition'] = 'filename=output.pdf'
+    return response  # returns the response.
+
 
 
 def download_json(request):

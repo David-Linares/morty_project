@@ -1,20 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html>
+  <head>
     <meta charset="utf-8">
-  <title>Test</title>
-  <style>
-    body {
-      background-color: #f7f7f7;
-    }
-  </style>
-
-</head>
-<body>
-  <h1>Test Template</h1>
-    {{ data }}
-</body>
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
+    <script src="http://fred-wang.github.io/mathml.css/mspace.js"></script>
+    <script src="http://fred-wang.github.io/mathjax.js/mpadded.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  </head>
+  <body style="margin: 60px; font-size: 25px">
+    {{ data | safe }}
+  </body>
 </html>
