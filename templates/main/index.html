@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-xs-12 col-sm-8">
             <p style="text-align: center">
-                <label style="font-size: 25px" tabindex="1000">ASEMI</label><br/>
+                <label style="font-size: 25px" tabindex="1">ASEMI</label><br/>
                 <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Proyecto de grado</label><br/>
                 <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Desarrollado por: Ximena Garzón y Daniel Beltrán</label><br/>
                 <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Director: Ingeniero Mario Silva</label><br/>
@@ -27,30 +27,30 @@
     </div>
     <div class="row">
         <div class="col-sm-8 col-xs-12">
-            <label style="font-size: 24px" tabindex="8">Escriba ecuación en lenguaje Latex</label>
+            <label style="font-size: 24px" tabindex="1">Escriba ecuación en lenguaje Latex</label>
             <form action="/" method="post">
                 {% csrf_token %}
-                <textarea name="latex_form" style="border: 1px solid #17AA5E; width: 90%; height: 250px" tabindex="9" id="ta_latex">{{ latex_form }}</textarea>
-                <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="10">
-                <input type="button" value="Limpiar" alt="Limpiar campos" class="btn btn-success" tabindex="11" onclick="reset_fields()">
+                <textarea name="latex_form" style="border: 1px solid #17AA5E; width: 90%; height: 250px" tabindex="2" id="ta_latex">{{ latex_form }}</textarea>
+                <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="3">
+                <input type="button" value="Limpiar" alt="Limpiar campos" class="btn btn-success" tabindex="4" onclick="reset_fields()">
 {#                <input type="submit" value="Cargar Ecuación" alt="Cargar Ecuación" class="btn btn-info" tabindex="11">#}
             </form>
             <br>
             <form action="/export/" method="POST" target="_blank" style="display: inline-block; vertical-align: top">
-                <input type="hidden" value="{{ mathml_data }}" name="data_mathml">
+                <input type="text" value="{{ mathml_data }}" name="data_mathml">
                 {% csrf_token %}
-                <button><img src="{% static "img/pdf.png" %}" alt="Exportar ecuación a archivo PDF" height="70px" class="btn" tabindex="15"></button>
+                <button id="pdf_button" disabled="true"><img src="{% static "img/pdf.png" %}" alt="Descargar ecuación para presentar en formato PDF" height="70px" class="btn" tabindex="7"></button>
             </form>
             <form action="/export/json" method="POST" target="_blank" style="display: inline-block; vertical-align: top">
                 <input type="hidden" value="{{ latex_form }}" name="equation_data">
                 {% csrf_token %}
-                <button><img src="{% static "img/json.png" %}" alt="Exportar ecuación a archivo JSON" height="70px" class="btn" tabindex="15"></button>
+                <button id="export_button" disabled="true"><img src="{% static "img/json.png" %}" alt="Descargar para utilizar en una próxima ocasión" height="70px" class="btn" tabindex="7"></button>
             </form>
             <form action="/import/" enctype="multipart/form-data" method="POST" style="display: inline-block; vertical-align: top">
                 <input type="hidden" value="{{ upload_file }}" name="upload_file" id="upload_file">
                 {% csrf_token %}
-                <input type="file" name="uploaded_file" tabindex="15">
-                <button><img src="{% static "img/import.png" %}" alt="Importar archivo" height="40px" class="btn" tabindex="15"></button>
+                <input type="file" name="uploaded_file" tabindex="7" alt="Cargar archivo">
+                <button><img src="{% static "img/import.png" %}" alt="Cargar archivo" height="40px" class="btn" tabindex="7"></button>
             </form>
         </div>
         <div class="col-sm-4 col-xs-12" style="margin-top: 4%">
@@ -106,19 +106,19 @@
     </div>
     <div class="row">
         <div class="col-sm-12 col-xs-12" style="">
-            <label style="font-size:24px" tabindex="12">Ecuación Gráfica</label>
+            <label style="font-size:24px" tabindex="5">Ecuación Gráfica</label>
             <div class="col-sm-12" style="padding: 10px; min-height: 150px; min-width: 90%; font-size: 30px;">
                 {% for math in mathml_data %}
                     <div class="col-sm-4">
                     {% with y=forloop.counter0|stringformat:"i" %}
                     {% with val_sound=val_sound|add:y|add:".ogg" %}
                         <input type="hidden" name="sound_name{{ y }}" id="sound_name{{ y }}" value="{% static val_sound %}">
-                        <input type="button" value="Leer Linea {{ y|add:"1"}}" alt="Leer Linea {{ y|add:"1"}}" class="btn btn-success" tabindex="14" onclick="play_sound('sound_name{{ y }}')">
+                        <input type="button" value="Leer Linea {{ y|add:"1"}}" alt="Leer Linea {{ y|add:"1"}}" class="btn btn-success" tabindex="6" onclick="play_sound('sound_name{{ y }}')">
             {#            <img src="https://nomeloexplicaron.files.wordpress.com/2015/05/bloc-de-notas.png" alt="Guardar expresión en archivo" height="100px" class="btn" tabindex="16">#}
                     {% endwith %}
                     {% endwith %}
                     </div>
-                    <div editable="true" readonly tabindex="14">{{ math | safe }}</div>
+                    <div editable="true" readonly tabindex="6">{{ math | safe }}</div>
                     <br>
                 {% endfor %}
             </div>
@@ -155,11 +155,13 @@
         if (sound_name != null) {
             if (sound_name.value.indexOf('ogg') != -1) {
                 alert('Las operaciones ya están disponibles de manera gráfica. \n Puede oirlas dando click al botón "Leer Ecuación"')
+                document.getElementById("pdf_button").disabled = false;
+                document.getElementById("export_button").disabled = false;
             }
         }else if(document.getElementById("ta_latex").value != '' && sound_name == null && document.getElementById("upload_file").value == "False"){
             alert('No se pudo convertir la ecuación, \n Por favor verifique lo que ingreso e inténtelo nuevamente')
         }else if(document.getElementById("ta_latex").value != '' && sound_name == null && document.getElementById("upload_file").value == "True"){
-            alert('Datos importados correctamente')
+            alert('Se han cargado las ecuaciones correctamente')
         }
     }
 

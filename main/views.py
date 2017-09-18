@@ -180,12 +180,17 @@ def pdf(request):
           </html>
         """
         data_mathml = request.POST.get("data_mathml", False)
+        print(data_mathml)
         try:
             if data_mathml:
                 data_mathml = ast.literal_eval(data_mathml)
+                print(data_mathml)
                 data_mathml = [n.strip() for n in data_mathml]
+                print(data_mathml)
                 data_mathml = '<br><br>'.join(data_mathml)
-                data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
+                print(data_mathml)
+                data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
+                print(data_mathml)
                 nhtml = nhtml % data_mathml
                 print(nhtml)
                 pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
