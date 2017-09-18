@@ -221,26 +221,11 @@ def pdf(request):
     template = get_template('pdf/pdf_template.html')
     html = template.render({"data": data_mathml.encode("utf-8")})
     print(html)
-    img = imgkit.from_string(html, "static/img/"+str(mac)+"out.png")
-    nhtml = """
-            <!DOCTYPE html>
-             <html>
-                  <head>
-                    <meta charset="UTF-8">
-                  </head>
-                  <body style="margin: 60px; font-size: 25px">
-                    <img src="%s" width="500px" height="100px"> 
-                  </body>
-              </html>
-            """
-    nhtml = nhtml % ("static/img/"+str(mac)+"out.png")
-    print(nhtml)
-    pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
-    with open(("static/img/"+str(mac)+"out.png"), "rb") as f:
-        response = HttpResponse(f.read())
-        response['Content-Type'] = 'image/png'
-        response['Content-Disposition'] = 'filename=output.png'
-        return response  # returns the response.
+    # pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+    response = HttpResponse(html)
+    # response['Content-Type'] = 'application/pdf'
+    # response['Content-Disposition'] = 'filename=output.png'
+    return response  # returns the response.
 
 
 
