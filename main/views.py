@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.template import Context
 from django.template.loader import get_template
 from gtts import gTTS
+import imgkit
 from pydub import AudioSegment
 
 from asemi import settings
@@ -28,11 +29,11 @@ def index(request):
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                name_record = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.mp3"
-                final_name = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.ogg"
                 ############ Variables para pruebas
-                # name_record = "main/static/"+str(mac)+"last_record%d.mp3"
-                # final_name = "main/static/"+str(mac)+"last_record%d.ogg"
+                name_record = "main/static/"+str(mac)+"last_record%d.mp3"
+                final_name = "main/static/"+str(mac)+"last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
@@ -209,6 +210,7 @@ def pdf2(request):
 
 
 def pdf(request):
+    mac = get_mac()
     data_mathml = request.POST.get("data_mathml", False)
     data_mathml = ast.literal_eval(data_mathml)
     data_mathml = [n.strip() for n in data_mathml]
@@ -219,11 +221,26 @@ def pdf(request):
     template = get_template('pdf/pdf_template.html')
     html = template.render({"data": data_mathml.encode("utf-8")})
     print(html)
-    pdf = pdfkit.PDFKit(html, "string").to_pdf()
-    response = HttpResponse(pdf)  # Generates the response as pdf response.
-    response['Content-Type'] = 'application/pdf'
-    response['Content-Disposition'] = 'filename=output.pdf'
-    return response  # returns the response.
+    img = imgkit.from_string(html, "static/img/"+str(mac)+"out.png")
+    nhtml = """
+            <!DOCTYPE html>
+             <html>
+                  <head>
+                    <meta charset="UTF-8">
+                  </head>
+                  <body style="margin: 60px; font-size: 25px">
+                    <img src="%s" width="500px" height="100px"> 
+                  </body>
+              </html>
+            """
+    nhtml = nhtml % ("static/img/"+str(mac)+"out.png")
+    print(nhtml)
+    pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+    with open(("static/img/"+str(mac)+"out.png"), "rb") as f:
+        response = HttpResponse(f.read())
+        response['Content-Type'] = 'image/png'
+        response['Content-Disposition'] = 'filename=output.png'
+        return response  # returns the response.
 
 
 
