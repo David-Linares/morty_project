@@ -7,16 +7,10 @@ import pdfkit
 from django.db import connection
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
-from django.template import Context
 from django.template.loader import get_template
 from gtts import gTTS
-import imgkit
 from pydub import AudioSegment
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from xhtml2pdf import pisa
 
 from asemi import settings
@@ -235,25 +229,6 @@ def pdf_pdfkit(request):
         return response  # returns the response.
     else:
         raise Http404("Not found")
-
-
-def pdf_reportlab(request):
-    # Indicamos el tipo de contenido a devolver, en este caso un pdf
-    response = HttpResponse(content_type='application/pdf')
-    # La clase io.BytesIO permite tratar un array de bytes como un fichero binario, se utiliza como almacenamiento temporal
-    buffer = BytesIO()
-    # Canvas nos permite hacer el reporte con coordenadas X y Y
-    pdf = canvas.Canvas(buffer)
-    # Llamo al método cabecera donde están definidos los datos que aparecen en la cabecera del reporte.
-    # Con show page hacemos un corte de página para pasar a la siguiente
-    pdf.drawString(10, 820, "<b>Hola mundo!!</b>")
-    pdf.showPage()
-    pdf.save()
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
-    return response
-
 
 def pdf(request):
     mac = get_mac()
