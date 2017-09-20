@@ -12,6 +12,11 @@ from django.template.loader import get_template
 from gtts import gTTS
 import imgkit
 from pydub import AudioSegment
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from xhtml2pdf import pisa
 
 from asemi import settings
@@ -32,11 +37,11 @@ def index(request):
         if request.POST.get('latex_form', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
-                name_record = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.mp3"
-                final_name = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.ogg"
+                # name_record = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.mp3"
+                # final_name = "/opt/asemi/asemi/static/"+str(mac)+"last_record%d.ogg"
                 ############ Variables para pruebas
-                # name_record = "main/static/"+str(mac)+"last_record%d.mp3"
-                # final_name = "main/static/"+str(mac)+"last_record%d.ogg"
+                name_record = "main/static/"+str(mac)+"last_record%d.mp3"
+                final_name = "main/static/"+str(mac)+"last_record%d.ogg"
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
@@ -212,26 +217,64 @@ def pdf2(request):
         return render(request, 'main/index.html', {})
 
 
+def pdf_pdfkit(request):
+    if request.POST:
+        data_mathml = request.POST.get("data_mathml", False)
+        data_mathml = ast.literal_eval(data_mathml)
+        data_mathml = [n.strip() for n in data_mathml]
+        data_mathml = '<br><br>'.join(data_mathml)
+        print(data_mathml)
+        # template = get_template('pdf/pdf_template.html')
+        template = get_template("pdf/pdf_template.html")
+        nhtml = template.render({"data": data_mathml})
+        # pdf = pdfkit.from_file("templates/pdf/pdf_template.html", "output.pdf")
+        pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+        response = HttpResponse(pdf)
+        response['Content-Type'] = 'application/pdf'
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response  # returns the response.
+    else:
+        raise Http404("Not found")
+
+
+def pdf_reportlab(request):
+    # Indicamos el tipo de contenido a devolver, en este caso un pdf
+    response = HttpResponse(content_type='application/pdf')
+    # La clase io.BytesIO permite tratar un array de bytes como un fichero binario, se utiliza como almacenamiento temporal
+    buffer = BytesIO()
+    # Canvas nos permite hacer el reporte con coordenadas X y Y
+    pdf = canvas.Canvas(buffer)
+    # Llamo al método cabecera donde están definidos los datos que aparecen en la cabecera del reporte.
+    # Con show page hacemos un corte de página para pasar a la siguiente
+    pdf.drawString(10, 820, "<b>Hola mundo!!</b>")
+    pdf.showPage()
+    pdf.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+
+
 def pdf(request):
     mac = get_mac()
     data_mathml = request.POST.get("data_mathml", False)
-    data_mathml = ast.literal_eval(data_mathml)
-    data_mathml = [n.strip() for n in data_mathml]
-    data_mathml = '<br>'.join(data_mathml)
+    # data_mathml = ast.literal_eval(data_mathml)
+    # data_mathml = [n.strip() for n in data_mathml]
+    # data_mathml = ''.join(data_mathml)
     # data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
     print(data_mathml)
-
     template = get_template('pdf/pdf_template.html')
+    print(template)
     html = template.render({"data": data_mathml})
 
-    pdf = pdfkit.PDFKit(html, "string").to_pdf()
+    # pdf = pdfkit.PDFKit(html, "string").to_pdf()
 
     # pdf = pdfkit.from_string(html.encode("utf-8"), "static/img/"+str(mac)+"out.pdf")
 
     # f = open("static/img/"+str(mac)+"out.pdf")
 
     #
-    # img_name = str(mac)+"out.png"
+    # img_name = str(mac)+"out.svg"
     #
     # imgkit.from_string(html, "static/img/"+img_name)
     #
@@ -252,8 +295,9 @@ def pdf(request):
     #         """
     # nhtml = nhtml % img_name
     result = BytesIO()
-    # pdf = pisa.pisaDocument(BytesIO(nhtml.encode("utf-8")), result)
-    response = HttpResponse(pdf, content_type="application/pdf")
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    response = HttpResponse(result.getvalue(), content_type="application/pdf")
+    response['Content-Disposition'] = "inline; filename='%s'" %("pdf_output.pdf")
     # response = HttpResponse(html)
     return response  # returns the response.
 
@@ -292,3 +336,8 @@ def import_json(request):
                        "name_record": "", "data_symbols": data_symbols, "upload_file": True})
     except:
         return render(request, 'main/index.html', {"data_symbols": data_symbols})
+
+
+
+def test_pdf(request):
+    return render(request, 'prueba.html')

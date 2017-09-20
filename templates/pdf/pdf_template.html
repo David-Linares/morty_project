@@ -1,16 +1,21 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
-  <head>
-      <title>New title here!</title>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
-{#          <script type="text/javascript" async#}
-{#  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">#}
+<head>
+<title>Mathedemo</title>
+    <meta charset="utf-8">
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
-  </head>
-  <body style="margin: 60px; font-size: 25px">
-        {{ data | safe }}
-  </body>
+<script type="text/javascript"
+  src="http://localhost:8000/static/main/js/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+
+<body style="margin: 50px; font-size: 30px; color: white;">
+
+<div style="color: black">
+    {{ data | safe }}
+</div>
+
+</body>
 </html>
