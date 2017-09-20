@@ -6,15 +6,12 @@
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
-<script type="text/javascript"
-  src="http://localhost:80/static/main/js/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
 </head>
 
 <body style="margin: 50px; font-size: 30px; color: white;">
 
 <div style="color: black">
-    {{ data | safe }}
+    <img src="http://localhost:80/{{ img_path }}" alt="Ecuación">
 </div>
 
 </body>

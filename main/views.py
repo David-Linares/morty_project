@@ -9,10 +9,9 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.template.loader import get_template
 from gtts import gTTS
+import imgkit
 from pydub import AudioSegment
-from reportlab.pdfgen import canvas
 from xhtml2pdf import pisa
-
 from asemi import settings
 from uuid import getnode as get_mac
 import os
@@ -212,6 +211,7 @@ def pdf2(request):
 
 
 def pdf_pdfkit(request):
+    mac = get_mac()
     if request.POST:
         data_mathml = request.POST.get("data_mathml", False)
         data_mathml = ast.literal_eval(data_mathml)
@@ -219,8 +219,34 @@ def pdf_pdfkit(request):
         data_mathml = '<br><br>'.join(data_mathml)
         print(data_mathml)
         # template = get_template('pdf/pdf_template.html')
+        img_html = """
+        <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+        <html>
+        <head>
+        <title>Mathedemo</title>
+            <meta charset="utf-8">
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+        </script>
+        <script type="text/javascript"
+          src="http://localhost:80/static/main/js/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        </head>
+        
+        <body style="margin: 50px; font-size: 30px; color: white;">
+        
+        <div style="color: black">
+            %s
+        </div>
+        
+        </body>
+        </html>
+        """
+        img_html = img_html % data_mathml
+        path_img = "static/img/"+str(mac)+"img_out.png"
+        img_generate = imgkit.from_string(img_html, path_img)
         template = get_template("pdf/pdf_template.html")
-        nhtml = template.render({"data": data_mathml})
+        nhtml = template.render({"img_path": path_img})
         # pdf = pdfkit.from_file("templates/pdf/pdf_template.html", "output.pdf")
         pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
         response = HttpResponse(pdf)
