@@ -24,6 +24,7 @@ def index(request):
     #Consulta los símbolos de la tabla de apoyo.
     query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
+    mac = get_mac()
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
