@@ -38,4 +38,7 @@ rm -f wkhtmltox-0.12.4_linux-generic-amd64.tar
 pip3 install PyJWT
 pip3 install --pre xhtml2pdf
 
+Simbolos especiales
+- ^
+- ||Vec
 
