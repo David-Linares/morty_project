@@ -83,7 +83,7 @@ def index(request):
                             tts_str = tts_str.replace('_{', ' desde ')
                             tts_str = tts_str.replace('}^{', ' hasta ')
                             tts_str = tts_str.replace(' (', ' de ')
-                        elif 'int' in value1:
+                        elif 'int' or 'sum' or 'prod' in value1:
                             tts_str = tts_str.replace('(', ' (')
                             tts_str = tts_str.replace('_{', ' desde ')
                             tts_str = tts_str.replace('}^{', ' hasta ')
