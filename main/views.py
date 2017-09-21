@@ -11,7 +11,7 @@ from django.template.loader import get_template
 from gtts import gTTS
 import imgkit
 from pydub import AudioSegment
-from xhtml2pdf import pisa
+# from xhtml2pdf import pisa
 from asemi import settings
 from uuid import getnode as get_mac
 import os
@@ -49,6 +49,8 @@ def index(request):
                         print(value)
                         value1 = value[:]
                         mathml_output.append(latex2mathml.converter.convert(value))
+                        
+                        print(mathml_output)
                         matches_list = find_matches(value)
                         tts_str = value[:]
                         print("paso 3")
@@ -189,7 +191,6 @@ def pdf2(request):
                 print(data_mathml)
                 data_mathml = [n.strip() for n in data_mathml]
                 print(data_mathml)
-                data_mathml = '<br><br>'.join(data_mathml)
                 print(data_mathml)
                 data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
                 print(data_mathml)
@@ -215,8 +216,9 @@ def pdf_pdfkit(request):
     if request.POST:
         data_mathml = request.POST.get("data_mathml", False)
         data_mathml = ast.literal_eval(data_mathml)
+        print(data_mathml)
         data_mathml = [n.strip() for n in data_mathml]
-        data_mathml = '<br><br>'.join(data_mathml)
+        data_mathml = "<br><br>".join(data_mathml)
         print(data_mathml)
         # template = get_template('pdf/pdf_template.html')
         img_html = """
@@ -243,12 +245,12 @@ def pdf_pdfkit(request):
         </html>
         """
         img_html = img_html % data_mathml
-        path_img = "static/img/"+str(mac)+"img_out.png"
+        path_img = "/tmp/"+str(mac)+"img_out.png"
         img_generate = imgkit.from_string(img_html, path_img)
         template = get_template("pdf/pdf_template.html")
         nhtml = template.render({"img_path": path_img})
         # pdf = pdfkit.from_file("templates/pdf/pdf_template.html", "output.pdf")
-        pdf = pdfkit.PDFKit(nhtml, "string").to_pdf()
+        pdf = pdfkit.PDFKit(img_html, "string").to_pdf()
         response = HttpResponse(pdf)
         response['Content-Type'] = 'application/pdf'
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
@@ -296,7 +298,7 @@ def pdf(request):
     #         """
     # nhtml = nhtml % img_name
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    # pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
     response = HttpResponse(result.getvalue(), content_type="application/pdf")
     response['Content-Disposition'] = "inline; filename='%s'" %("pdf_output.pdf")
     # response = HttpResponse(html)
@@ -308,7 +310,7 @@ def download_json(request):
     query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
     try:
-        file_path = "data.json"
+        file_path = "/tmp/data.json"
         if request.POST.get("equation_data", False):
             f = open(file_path, "w")
             data = {"data": request.POST.get("equation_data", False)}

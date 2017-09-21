@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django_pdfkit import PDFView
+# from django_pdfkit import PDFView
 
 from . import views
 
