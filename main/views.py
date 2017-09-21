@@ -95,7 +95,7 @@ def index(request):
                             tts_str = tts_str.replace('{', ' cuadrada de ')
                         elif 'lim' in value1:
                             tts_str = tts_str.replace('_{', ' desde ')
-                            tts_str = tts_str.replace('\\to', ' hasta ')
+                            # tts_str = tts_str.replace('\\to', ' hasta ')
                             tts_str = tts_str.replace('}(', ' de ')
                         print("paso 5")
                         print(tts_str)
