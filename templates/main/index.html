@@ -27,7 +27,7 @@
             <form action="/" method="post">
                 {% csrf_token %}
                 <textarea name="latex_form" style="border: 1px solid #17AA5E; width: 90%; height: 250px" tabindex="2" id="ta_latex">{{ latex_form }}</textarea>
-                <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="3">
+                <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="3" onclick="this.disabled = true; this.value='Graficando...'">
                 <input type="button" value="Limpiar" alt="Limpiar campos" class="btn btn-success" tabindex="4" onclick="reset_fields()">
 {#                <input type="submit" value="Cargar Ecuación" alt="Cargar Ecuación" class="btn btn-info" tabindex="11">#}
             </form>
@@ -143,6 +143,10 @@
         sound_name = document.getElementById(sound);
         var snd = new Audio(sound_name.value);
         snd.play();
+    }
+
+    function inhabilitar_boton(){
+
     }
 
     function reset_fields(){
