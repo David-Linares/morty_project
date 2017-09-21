@@ -135,6 +135,6 @@ STATICFILES_DIRS = [
 '''Project Constants'''
 
 FUNCTIONS = {
-    'FRAC':r"([a-zA-Z]+ |\\frac|\{\d+}|\{[a-zA-Z]+}|\\sin|\\cos|\\tan|\\csc|\\sec|\\cot|\\ln|\\log|\\infty|\\pi|\\mu|\\cap|\\cup|\\leq|\\geq|\\rightarrow|\\leftrightarrow|\\leftarrow|\\forall|\\exists|\\neg|\\nexists|\\sum|\\int|\\oint|\\sqrt)"
+    'FRAC':r"([a-zA-Z]+ |\\frac|\{\d+}|\{[a-zA-Z]+}|\\sin|\\cos|\\tan|\\csc|\\sec|\\cot|\\ln|\\log|\\infty|\\pi|\\mu|\\cap|\\cup|\\leq|\\geq|\\rightarrow|\\leftrightarrow|\\leftarrow|\\forall|\\exists|\\neg|\\nexists|\\sum|\\int|\\oint|\\sqrt|\vec|\langle|\rangle|\uparrow|\downarrow|\arccos|\arcsin|\arctan|\cosh|\coth|\det|\exp|\lim|\liminf|\limsup|\max|\min|\sinh|\sup|\tanh|\alpha|\beta|\gamma|\delta|\epsilon|\varepsilon|\zeta|\eta|\theta|\vartheta|\iota|\kappa|\lambda|\mu|\nu|\xi|\pi|\varpi|\rho|\varrho|\sigma|\varsigma|\tau|\upsilon|\phi|\varphi|\chi|\psi|\omega|\Gamma|\Delta|\Theta|\Lambda|\Xi|\Pi|\Sigma|\Upsilon|\Phi|\Psi|\Omega|\pm|\mp|\times||\div|\star|\circ|\bullet|\cdot|\cap|\cup|\vee|\wedge|\diamond|\leq|\prec|\bigtriangledown|\bigtriangleup|\subset|\subseteq|\in\geq||\supset|\supseteq|\equiv|\approx|\neq|<|\perp|\parallel|=|>|\sum|\prod|\int|\oint|\colon|\leftarrow|\nleftarrow|\rightarrow|\nrightarrow|\leftrightarrow|\nleftrightarrow|\uparrow|\downarrow|\nearrow|\searrow|\Re|\cdots|\nabla|\top|\bot|\vdots|\forall|\exists|\exists!|\neg|\backslash|\partial|\infty|\emptyset)"
 }
 
