@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^export/$', views.pdf_pdfkit, name='pdf'),
+    url(r'^about/$', views.about, name='pdf'),
     url(r'^export/json', views.download_json, name='json'),
     url(r'^import/', views.import_json, name='import'),
     url(r'^pdf/', views.pdf_pdfkit, name='import'),

@@ -258,54 +258,6 @@ def pdf_pdfkit(request):
     else:
         raise Http404("Not found")
 
-def pdf(request):
-    mac = get_mac()
-    data_mathml = request.POST.get("data_mathml", False)
-    # data_mathml = ast.literal_eval(data_mathml)
-    # data_mathml = [n.strip() for n in data_mathml]
-    # data_mathml = ''.join(data_mathml)
-    # data_mathml = data_mathml.replace('<math>', '<math xmlns="http://www.w3.org/1998/Math/MathML">')
-    print(data_mathml)
-    template = get_template('pdf/pdf_template.html')
-    print(template)
-    html = template.render({"data": data_mathml})
-
-    # pdf = pdfkit.PDFKit(html, "string").to_pdf()
-
-    # pdf = pdfkit.from_string(html.encode("utf-8"), "static/img/"+str(mac)+"out.pdf")
-
-    # f = open("static/img/"+str(mac)+"out.pdf")
-
-    #
-    # img_name = str(mac)+"out.svg"
-    #
-    # imgkit.from_string(html, "static/img/"+img_name)
-    #
-    # nhtml = """
-    #         <!DOCTYPE html>
-    #          <html>
-    #               <head>
-    #                 <meta charset="UTF-8">
-    #                 <script src="http://fred-wang.github.io/mathml.css/mspace.js"></script>
-    #                 <script src="http://fred-wang.github.io/mathjax.js/mpadded.js"></script>
-    #                 <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    #               </head>
-    #               <body style="margin: 60px">
-    #                 <img src="http://localhost:8000/static/img/%s">
-    #               </body>
-    #
-    #           </html>
-    #         """
-    # nhtml = nhtml % img_name
-    result = BytesIO()
-    # pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    response = HttpResponse(result.getvalue(), content_type="application/pdf")
-    response['Content-Disposition'] = "inline; filename='%s'" %("pdf_output.pdf")
-    # response = HttpResponse(html)
-    return response  # returns the response.
-
-
-
 def download_json(request):
     query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
@@ -342,5 +294,7 @@ def import_json(request):
 
 
 
-def test_pdf(request):
-    return render(request, 'prueba.html')
+def about(request):
+    return render(request, 'main/about.html')
+
+

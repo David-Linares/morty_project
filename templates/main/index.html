@@ -14,15 +14,11 @@
         <div class="col-xs-12 col-sm-8">
             <p style="text-align: center">
                 <label style="font-size: 25px" tabindex="1">ASEMI</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Proyecto de grado</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Desarrollado por: Ximena Garzón y Daniel Beltrán</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Director: Ingeniero Mario Silva</label><br/>
-                <label style="text-align: center; line-height: 30%; font-weight: normal" tabindex="1000">Programa Ingeniería de Sistemas</label><br/>
             </p>
         </div>
         <div class="col-xs-12 col-sm-4">
-            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="58%" tabindex="1000">
-            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="27%" tabindex="1000">
+            <img src="{% static "img/uelbosque.jpg" %}" alt="Logo U El Bosque" width="58%" tabindex="11">
+            <img src="{% static "img/inci.jpg" %}" alt="Logo INCI" width="27%" tabindex="11">
         </div>
     </div>
     <div class="row">
@@ -54,7 +50,7 @@
             </form>
         </div>
         <div class="col-sm-4 col-xs-12" style="margin-top: 4%">
-            <div class="panel-group" id="accordion">
+            <div class="panel-group" id="accordion" tabindex="8">
             {% for sym in data_symbols %}
             {% ifchanged sym.7 %}
                 {% if forloop.counter0 > 0 %}
@@ -66,7 +62,7 @@
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne{{ sym.0 }}">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne{{ sym.0 }}" tabindex="9">
                       {{ sym.7 }}
                     </a>
                   </h4>
@@ -79,10 +75,10 @@
                                 </tr>
                             {% endif %}
                             <tr align="center">
-                            <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            <td><button tabindex="10" class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                         {% endif %}
                         {% if not forloop.counter0|divisibleby:4 %}
-                            <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                            <td><button tabindex="10" class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                         {% endif %}
             {% else %}
                 {% if forloop.counter0|divisibleby:4 %}
@@ -90,10 +86,10 @@
                         </tr>
                     {% endif %}
                     <tr align="center">
-                    <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                    <td><button tabindex="10" class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                 {% endif %}
                 {% if not forloop.counter0|divisibleby:4 %}
-                    <td><button class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
+                    <td><button tabindex="10" class="btn" style="background: none" latexval="{{ sym.1 }}" cursorpos="{{ sym.2 }}" onclick="setfunction(this)"><img src="{% static sym.3 %}" width="{{ sym.6 }}" alt="{{ sym.4 }}"></button></td>
                 {% endif %}
             {% endifchanged %}
             {% endfor %}
@@ -126,6 +122,10 @@
             <br>
         </div>
     </div>
+</div>
+<div class="col-xs-12" style="text-align: center">
+    <label tabindex="12">Todos los derechos reservados 2017®</label>
+    <label><a tabindex="12" href="/about" target="_blank">Acerca de</a></label>
 </div>
 </body>
 <script type="text/javascript"
