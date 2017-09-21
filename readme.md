@@ -39,16 +39,3 @@ pip3 install PyJWT
 pip3 install --pre xhtml2pdf
 
 
-
-
---
-
-- Trigonométricas (sin, cos, tan, cot, csc, sec, ln, log, infty)
-- Letras griegas Minúscula (Pi, Theta, Deltha, Omega, Mu, Lambda)
-- Binarios (Cap, Cop)
-- Relación (leq, geq)
-- Flechas (rightarrow, longrightarrow)
-- Varios (Forall, exists, neg, nexists)
-- Tamaño variable (Sum, int, oint, )
-- Otras construcción (sqrt, sqrt[n], frac)
-- matrices(binom, matrix, )

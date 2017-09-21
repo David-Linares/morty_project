@@ -24,7 +24,6 @@ def index(request):
     #Consulta los símbolos de la tabla de apoyo.
     query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
     data_symbols = query_str(query)
-    mac = get_mac()
     # Si llega el método post.
     if request.POST:
         if request.POST.get('latex_form', False): # Si llega post para convertir
@@ -93,6 +92,10 @@ def index(request):
                             tts_str = tts_str.replace(']{', ' de ')
                         elif 'sqrt{' in value1:
                             tts_str = tts_str.replace('{', ' cuadrada de ')
+                        elif 'lim':
+                            tts_str = tts_str.replace('_{', ' desde ')
+                            tts_str = tts_str.replace('\\to', ' hasta ')
+                            tts_str = tts_str.replace('}(', ' de ')
                         print("paso 5")
                         print(tts_str)
                         text = gTTS(text=tts_str, lang='es')
