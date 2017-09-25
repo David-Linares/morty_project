@@ -24,10 +24,10 @@
     <div class="row">
         <div class="col-sm-8 col-xs-12">
             <label style="font-size: 24px" tabindex="1">Escriba ecuación en lenguaje Latex</label>
-            <form action="/" method="post">
+            <form action="/" method="post" id="form_latex">
                 {% csrf_token %}
                 <textarea name="latex_form" style="border: 1px solid #17AA5E; width: 90%; height: 250px" tabindex="2" id="ta_latex">{{ latex_form }}</textarea>
-                <input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="3" onclick="this.disabled = true; this.value='Graficando...'">
+		<input type="submit" value="Graficar Ecuación" alt="Graficar Ecuación" class="btn btn-success" tabindex="3" onclick="return disable_button(this);">
                 <input type="button" value="Limpiar" alt="Limpiar campos" class="btn btn-success" tabindex="4" onclick="reset_fields()">
 {#                <input type="submit" value="Cargar Ecuación" alt="Cargar Ecuación" class="btn btn-info" tabindex="11">#}
             </form>
@@ -145,8 +145,11 @@
         snd.play();
     }
 
-    function inhabilitar_boton(){
-
+    function disable_button(e){
+	e.disabled = true;
+	e.value='Graficando...'; 
+	form = document.getElementById("form_latex");
+	form.submit();
     }
 
     function reset_fields(){
