@@ -22,12 +22,33 @@ import latex2mathml.converter
 
 def index(request):
     #Consulta los símbolos de la tabla de apoyo.
-    query = "select * from guia_expresiones where expresion_estado = 1 order by categoria_expresion_ge"
+    letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','aa', 'bb','cc','dd','ee', 'ff', 'gg','hh']
+    query = "select * from guia_expresiones as g join categorias as c on c.id_categoria = g.categoria_expresion_ge where expresion_estado = 1 order by categoria_expresion_ge, latexval"
     data_symbols = query_str(query)
+    cat_ant = ""
+    count_i = 1
+    data_symbols = list(data_symbols)
+    data_symbolsn = []
+    print("Paso 0.1")
+    for ds in data_symbols:
+        ds = list(ds)
+        if ds[7] != cat_ant: # Cambió y vuelve a empezar el conteo
+            cat_ant = ds[7]
+            count_i = 1
+            ds[0] = count_i
+            ds.append(letters[count_i])
+        else: # No ha cambiado y continua el conteo
+            count_i = count_i + 1
+            ds[0] = count_i
+            ds.append(letters[count_i])
+        data_symbolsn.append(ds)
+    data_symbols = data_symbolsn
+    query_c = "select * from categorias order by nombre_categoria"
+    categories_expression = query_str(query_c)
     mac = get_mac()
     # Si llega el método post.
     if request.POST:
-        if request.POST.get('latex_form', False): # Si llega post para convertir
+        if request.POST.get('latex_form_box', False): # Si llega post para convertir
             try:
                 ############ Variables para Producción
                 # name_record = "/opt/asemi/asemi/static/audio/"+str(mac)+"last_record%d.mp3"
@@ -38,7 +59,7 @@ def index(request):
                 list_final = []
                 mathml_output = []
                 # Listado de ecuaciones escritas.
-                equa_list = request.POST['latex_form'].split('\n')
+                equa_list = request.POST['latex_form_box'].split('\n')
                 num_audio = 0
                 for index, value in enumerate(equa_list):
                     # Quita espacios que no sirven
@@ -112,17 +133,17 @@ def index(request):
                         list_final.append(final_name % num_audio)
                         num_audio+=1
                 return render(request, 'main/index.html',
-                              {"mathml_data": mathml_output, "latex_form": request.POST['latex_form'],
-                               "name_record": list_final, "data_symbols": data_symbols, "upload_file": False, "val_sound": str(mac)+"last_record"})
+                              {"mathml_data": mathml_output, "latex_form_box": request.POST['latex_form_box'],
+                               "name_record": list_final, "data_symbols": data_symbols, "categories_expression": categories_expression, "upload_file": False, "val_sound": str(mac)+"last_record"})
             except Exception as e:
                 print(e)
                 return render(request, 'main/index.html',
-                              {"mathml_data": "", "latex_form": request.POST.get('latex_form', ""),
-                               "name_record": "", "data_symbols": data_symbols, "upload_file": False})
+                              {"mathml_data": "", "latex_form_box": request.POST.get('latex_form_box', ""),
+                               "name_record": "", "data_symbols": data_symbols, "categories_expression": categories_expression, "upload_file": False})
         else:
-            return render(request, 'main/index.html', {"data_symbols": data_symbols, "upload_file": False})
+            return render(request, 'main/index.html', {"data_symbols": data_symbols, "categories_expression": categories_expression, "upload_file": False})
     else:
-        return render(request, 'main/index.html', {"data_symbols": data_symbols,"upload_file": False})
+        return render(request, 'main/index.html', {"data_symbols": data_symbols,"categories_expression": categories_expression, "upload_file": False})
 
 
 def find_matches(text):
@@ -257,7 +278,7 @@ def pdf_pdfkit(request):
         pdf = pdfkit.PDFKit(img_html, "string").to_pdf()
         response = HttpResponse(pdf)
         response['Content-Type'] = 'application/pdf'
-        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        response['Content-Disposition'] = 'inline;filename=presentacion_ecuaciones.pdf'
         return response  # returns the response.
     else:
         raise Http404("Not found")
@@ -276,7 +297,7 @@ def download_json(request):
             if os.path.exists(file_path):
                 with open(file_path, 'rb') as fh:
                     response = HttpResponse(fh.read(), content_type="application/json")
-                    response['Content-Disposition'] = 'attachment; filename=export.json'
+                    response['Content-Disposition'] = 'attachment; filename=guardar_ecuaciones.json'
                     return response
         raise Http404
     except Exception as e:
@@ -291,7 +312,7 @@ def import_json(request):
         upload = eval(request.FILES['uploaded_file'].read())
         print(upload)
         return render(request, 'main/index.html',
-                      {"mathml_data": "", "latex_form": upload['data'],
+                      {"mathml_data": "", "latex_form_box": upload['data'],
                        "name_record": "", "data_symbols": data_symbols, "upload_file": True})
     except:
         return render(request, 'main/index.html', {"data_symbols": data_symbols})
